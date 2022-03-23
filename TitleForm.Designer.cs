@@ -29,6 +29,7 @@ namespace ex5_9
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTitles));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -74,7 +75,12 @@ namespace ex5_9
             this.btnXAuthors2 = new System.Windows.Forms.Button();
             this.btnXAuthor3 = new System.Windows.Forms.Button();
             this.btnXAuthor4 = new System.Windows.Forms.Button();
+            this.btnPrintRecord = new System.Windows.Forms.Button();
+            this.picBooks = new System.Windows.Forms.PictureBox();
+            this.btnPrintTitles = new System.Windows.Forms.Button();
+            this.dlgPreview = new System.Windows.Forms.PrintPreviewDialog();
             this.grpFindTitle.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picBooks)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -164,9 +170,9 @@ namespace ex5_9
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(287, 396);
+            this.btnSave.Location = new System.Drawing.Point(318, 396);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(79, 28);
+            this.btnSave.Size = new System.Drawing.Size(64, 28);
             this.btnSave.TabIndex = 9;
             this.btnSave.Text = "&Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -174,9 +180,9 @@ namespace ex5_9
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(399, 396);
+            this.btnCancel.Location = new System.Drawing.Point(388, 396);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(64, 28);
+            this.btnCancel.Size = new System.Drawing.Size(75, 28);
             this.btnCancel.TabIndex = 10;
             this.btnCancel.Text = "&Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
@@ -184,9 +190,9 @@ namespace ex5_9
             // 
             // btnAddNew
             // 
-            this.btnAddNew.Location = new System.Drawing.Point(160, 430);
+            this.btnAddNew.Location = new System.Drawing.Point(318, 430);
             this.btnAddNew.Name = "btnAddNew";
-            this.btnAddNew.Size = new System.Drawing.Size(75, 30);
+            this.btnAddNew.Size = new System.Drawing.Size(64, 30);
             this.btnAddNew.TabIndex = 11;
             this.btnAddNew.Text = "&Add New";
             this.btnAddNew.UseVisualStyleBackColor = true;
@@ -194,9 +200,9 @@ namespace ex5_9
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(287, 430);
+            this.btnDelete.Location = new System.Drawing.Point(241, 396);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(79, 30);
+            this.btnDelete.Size = new System.Drawing.Size(71, 30);
             this.btnDelete.TabIndex = 12;
             this.btnDelete.Text = "&Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
@@ -204,9 +210,9 @@ namespace ex5_9
             // 
             // btnDone
             // 
-            this.btnDone.Location = new System.Drawing.Point(399, 430);
+            this.btnDone.Location = new System.Drawing.Point(388, 430);
             this.btnDone.Name = "btnDone";
-            this.btnDone.Size = new System.Drawing.Size(64, 30);
+            this.btnDone.Size = new System.Drawing.Size(75, 30);
             this.btnDone.TabIndex = 13;
             this.btnDone.Text = "D&one";
             this.btnDone.UseVisualStyleBackColor = true;
@@ -214,9 +220,9 @@ namespace ex5_9
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(399, 466);
+            this.btnHelp.Location = new System.Drawing.Point(241, 434);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(64, 31);
+            this.btnHelp.Size = new System.Drawing.Size(71, 26);
             this.btnHelp.TabIndex = 14;
             this.btnHelp.Text = "&Help";
             this.btnHelp.UseVisualStyleBackColor = true;
@@ -375,9 +381,9 @@ namespace ex5_9
             // 
             // btnPublishers
             // 
-            this.btnPublishers.Location = new System.Drawing.Point(287, 470);
+            this.btnPublishers.Location = new System.Drawing.Point(160, 434);
             this.btnPublishers.Name = "btnPublishers";
-            this.btnPublishers.Size = new System.Drawing.Size(79, 23);
+            this.btnPublishers.Size = new System.Drawing.Size(75, 23);
             this.btnPublishers.TabIndex = 27;
             this.btnPublishers.Text = "&Publishers";
             this.btnPublishers.UseVisualStyleBackColor = true;
@@ -469,7 +475,6 @@ namespace ex5_9
             this.btnXAuthor1.TabStop = false;
             this.btnXAuthor1.Text = "x";
             this.btnXAuthor1.UseVisualStyleBackColor = true;
-            this.btnXAuthor1.Click += new System.EventHandler(this.btnXAuthor1_Click);
             // 
             // btnXAuthors2
             // 
@@ -504,11 +509,55 @@ namespace ex5_9
             this.btnXAuthor4.Text = "x";
             this.btnXAuthor4.UseVisualStyleBackColor = true;
             // 
+            // btnPrintRecord
+            // 
+            this.btnPrintRecord.Location = new System.Drawing.Point(160, 469);
+            this.btnPrintRecord.Name = "btnPrintRecord";
+            this.btnPrintRecord.Size = new System.Drawing.Size(75, 23);
+            this.btnPrintRecord.TabIndex = 40;
+            this.btnPrintRecord.Text = "Print &Record";
+            this.btnPrintRecord.UseVisualStyleBackColor = true;
+            this.btnPrintRecord.Click += new System.EventHandler(this.btnPrintRecord_Click);
+            // 
+            // picBooks
+            // 
+            this.picBooks.Image = ((System.Drawing.Image)(resources.GetObject("picBooks.Image")));
+            this.picBooks.Location = new System.Drawing.Point(322, 466);
+            this.picBooks.Name = "picBooks";
+            this.picBooks.Size = new System.Drawing.Size(40, 31);
+            this.picBooks.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picBooks.TabIndex = 41;
+            this.picBooks.TabStop = false;
+            this.picBooks.Visible = false;
+            // 
+            // btnPrintTitles
+            // 
+            this.btnPrintTitles.Location = new System.Drawing.Point(241, 469);
+            this.btnPrintTitles.Name = "btnPrintTitles";
+            this.btnPrintTitles.Size = new System.Drawing.Size(71, 23);
+            this.btnPrintTitles.TabIndex = 42;
+            this.btnPrintTitles.Text = "Print &Titles";
+            this.btnPrintTitles.UseVisualStyleBackColor = true;
+            this.btnPrintTitles.Click += new System.EventHandler(this.btnPrintTitles_Click);
+            // 
+            // dlgPreview
+            // 
+            this.dlgPreview.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.dlgPreview.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.dlgPreview.ClientSize = new System.Drawing.Size(400, 300);
+            this.dlgPreview.Enabled = true;
+            this.dlgPreview.Icon = ((System.Drawing.Icon)(resources.GetObject("dlgPreview.Icon")));
+            this.dlgPreview.Name = "dlgPreview";
+            this.dlgPreview.Visible = false;
+            // 
             // frmTitles
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(502, 509);
+            this.Controls.Add(this.btnPrintTitles);
+            this.Controls.Add(this.picBooks);
+            this.Controls.Add(this.btnPrintRecord);
             this.Controls.Add(this.btnXAuthor4);
             this.Controls.Add(this.btnXAuthor3);
             this.Controls.Add(this.btnXAuthors2);
@@ -560,6 +609,7 @@ namespace ex5_9
             this.Load += new System.EventHandler(this.frmTitles_Load);
             this.grpFindTitle.ResumeLayout(false);
             this.grpFindTitle.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picBooks)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -612,5 +662,9 @@ namespace ex5_9
         private System.Windows.Forms.Button btnXAuthors2;
         private System.Windows.Forms.Button btnXAuthor3;
         private System.Windows.Forms.Button btnXAuthor4;
+        private System.Windows.Forms.Button btnPrintRecord;
+        private System.Windows.Forms.PictureBox picBooks;
+        private System.Windows.Forms.Button btnPrintTitles;
+        private System.Windows.Forms.PrintPreviewDialog dlgPreview;
     }
 }

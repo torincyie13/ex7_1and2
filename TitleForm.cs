@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.IO;
+using System.Drawing.Printing;
 
 namespace ex5_9
 {
@@ -22,6 +23,10 @@ namespace ex5_9
         SqlCommand authorsCommand;
         SqlDataAdapter authorsAdapter;
         DataTable[] authorsTable = new DataTable[4];
+
+        SqlCommand ISBNAuthorsCommand;
+        SqlDataAdapter ISBNAuthorsAdapter;
+        DataTable ISBNAuthorsTable;
         public frmTitles()
         {
             InitializeComponent();
@@ -35,7 +40,10 @@ namespace ex5_9
 
         SqlCommand publishersCommand;
         SqlDataAdapter publishersAdapter;
-        DataTable publishersTable;  
+        DataTable publishersTable;
+
+        int pageNumber;
+        const int titlesPerPage = 45;
 
         private void frmTitles_Load(object sender, EventArgs e)
         {
@@ -106,6 +114,7 @@ namespace ex5_9
                 this.Show();
                 SetState("View");
                 SetText();
+            GetAuthors();
         }
 
         private void frmTitles_FormClosing(object sender, FormClosingEventArgs e)
@@ -150,6 +159,35 @@ namespace ex5_9
                 authorsTable[1].Dispose();
                 authorsTable[2].Dispose();
                 authorsTable[3].Dispose();
+
+                ISBNAuthorsCommand.Dispose();
+                ISBNAuthorsAdapter.Dispose();
+                ISBNAuthorsTable.Dispose();
+            }
+        }
+
+        private void GetAuthors()
+        {
+            string SQLStatement = "select Title_Author.* FROM " +
+                "Title_Author WHERE Title_Author.ISBN = '" + txtISBN.Text + "'";
+            for (int i = 0; i < 4; i++)
+            {
+                authorsCombo[i].SelectedIndex = -1;
+            }
+            // establish author table/combo boxes to pick author
+            ISBNAuthorsCommand = new SqlCommand(SQLStatement,
+                booksConnection);
+            ISBNAuthorsAdapter = new SqlDataAdapter();
+            ISBNAuthorsAdapter.SelectCommand = ISBNAuthorsCommand;
+            ISBNAuthorsTable = new DataTable();
+            ISBNAuthorsAdapter.Fill(ISBNAuthorsTable);
+            if (ISBNAuthorsTable.Rows.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0; i < ISBNAuthorsTable.Rows.Count; i++)
+            {
+                authorsCombo[i].SelectedValue = ISBNAuthorsTable.Rows[i]["Au_ID"].ToString();
             }
         }
         private void btnPrevious_Click(object sender, EventArgs e)
@@ -160,6 +198,7 @@ namespace ex5_9
             }
             titlesManager.Position--;
             SetText();
+            GetAuthors();
         }
 
         private void btnNext_Click(object sender, EventArgs e)
@@ -170,6 +209,7 @@ namespace ex5_9
             }
             titlesManager.Position++;
             SetText();
+            GetAuthors();
         }
 
 
@@ -215,6 +255,7 @@ namespace ex5_9
                 MessageBox.Show("Error deleting record.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             SetText();
+            GetAuthors();
         }
 
         private void SetText()
@@ -318,6 +359,7 @@ namespace ex5_9
                 return;
             }
             SetText();
+            GetAuthors();
         }
 
         private void btnEdit_Click(object sender, EventArgs e)
@@ -333,6 +375,7 @@ namespace ex5_9
                 titlesManager.Position = myBookmark;
             }
             SetState("View");
+            GetAuthors();
         }
 
         private bool ValidateData()
@@ -394,12 +437,14 @@ namespace ex5_9
         {
             titlesManager.Position = 0;
             SetText();
+            GetAuthors();
         }
 
         private void btnLast_Click(object sender, EventArgs e)
         {
             titlesManager.Position = titlesManager.Count - 1;
             SetText();
+            GetAuthors();
         }
 
         private void btnFind_Click(object sender, EventArgs e)
@@ -421,6 +466,7 @@ namespace ex5_9
                 titlesManager.Position = titlesTable.DefaultView.Find(foundRows[0]["Title"]);
             }
             SetText();
+            GetAuthors();
         }
 
         private void btnPublishers_Click(object sender, EventArgs e)
@@ -460,6 +506,157 @@ namespace ex5_9
                     cboAuthor4.SelectedIndex = -1;
                     break;
             }
+        }
+
+        private void btnPrintRecord_Click(object sender, EventArgs e)
+        {
+            // Declare the document
+            PrintDocument recordDocument;
+            //Create the document and name it
+            recordDocument = new PrintDocument();
+            recordDocument.DocumentName = "Title Record";
+            // Add code handler
+            recordDocument.PrintPage += new 
+                PrintPageEventHandler(this.PrintRecordPage);
+            dlgPreview.Document = recordDocument;
+            dlgPreview.ShowDialog();
+            // Print document
+            recordDocument.Print();
+            // Dispose of document when done printing
+            recordDocument.Dispose();
+        }
+
+        private void PrintRecordPage (object sender, PrintPageEventArgs e)
+        {
+            // print graphic and heading ( 1 inch in height)
+            Pen myPen = new Pen(Color.Black, 3);
+            e.Graphics.DrawRectangle(myPen, e.MarginBounds.Left, e.MarginBounds.Top, e.MarginBounds.Width, 100);
+            e.Graphics.DrawImage(picBooks.Image, e.MarginBounds.Left + 10, e.MarginBounds.Top + 10, 80, 80);
+            // print heading
+            string s = "Books DATABASE";
+            Font myFont = new Font("Arial", 24, FontStyle.Bold);
+            SizeF sSize = e.Graphics.MeasureString(s, myFont);
+            e.Graphics.DrawString(s, myFont, Brushes.Black, e.MarginBounds.Left + 100 + 
+                Convert.ToInt32(0.5 * (e.MarginBounds.Width - 100 - sSize.Width)),
+                e.MarginBounds.Top + Convert.ToInt32(0.5 * (100 - sSize.Height)));
+            myFont = new Font("Arial", 12, FontStyle.Regular);
+            int y = 300;
+            int dy = Convert.ToInt32(e.Graphics.MeasureString("S",
+                myFont).Height);
+            // print title
+            e.Graphics.DrawString("Title: " + txtTitle.Text, myFont,
+                Brushes.Black, e.MarginBounds.Left, y);
+            // print authors
+            y += 2 * dy;
+            e.Graphics.DrawString("Authors(s): ", myFont, Brushes.Black, e.MarginBounds.Left, y);
+            int x = e.MarginBounds.Left +
+                Convert.ToInt32(e.Graphics.MeasureString("Author(s): ",
+                myFont).Width);
+            if (ISBNAuthorsTable.Rows.Count != 0)
+            {
+                for (int i = 0; i < ISBNAuthorsTable.Rows.Count; i++)
+                {
+                    e.Graphics.DrawString(authorsCombo[i].Text, myFont, Brushes.Black, x, y);
+                    y += dy;
+                }
+            }
+            else
+            {
+                e.Graphics.DrawString(" None", myFont, Brushes.Black, x, y);
+                y += dy;
+            }
+            x = e.MarginBounds.Left;
+            y += dy;
+            //Print other fields
+            e.Graphics.DrawString("ISBN: " + txtISBN.Text, myFont, Brushes.Black, x, y);
+            y += 2 * dy;
+            e.Graphics.DrawString("Year Published: " + txtYear.Text, myFont, Brushes.Black, x, y);
+            y += 2 * dy;
+            e.Graphics.DrawString("Publisher: " + cboPublisher.Text, myFont, Brushes.Black, x, y);
+            y += 2 * dy;
+            e.Graphics.DrawString("Description: " + txtDescription.Text, myFont, Brushes.Black, x, y);
+            y += 2 * dy;
+            e.Graphics.DrawString("Notes: " + txtNotes.Text, myFont, Brushes.Black, x, y);
+            y += 2 * dy;
+            e.Graphics.DrawString("Subject: " + txtSubject.Text, myFont, Brushes.Black, x, y);
+            y += 2 * dy;
+            e.Graphics.DrawString("Comments: " + txtComments.Text, myFont, Brushes.Black, x, y);
+            e.HasMorePages = false;
+        }
+
+        private void btnPrintTitles_Click(object sender, EventArgs e)
+        {
+            // Start printing process at first record
+            pageNumber = 1;
+            btnFirst.PerformClick();
+            PrintDocument titlesDocument;
+            // Create document and name it
+            titlesDocument = new PrintDocument();
+            titlesDocument.DocumentName = "Titles Listing";
+            // Add code handler
+            titlesDocument.PrintPage += new
+                PrintPageEventHandler(this.PrintTitlesPage);
+            // Print document
+            dlgPreview.Document = titlesDocument;
+            dlgPreview.ShowDialog();
+            // Dispose of document when done printing
+            titlesDocument.Dispose();
+        }
+
+        private void PrintTitlesPage(object sender, PrintPageEventArgs e)
+        {
+            // here you decide what goes on each page and draw it there
+            // print headings
+            Font myFont = new Font("Courier New", 14,
+                FontStyle.Bold);
+            e.Graphics.DrawString("Titles - Page " +
+                pageNumber.ToString(), myFont, Brushes.Black, e.MarginBounds.Left, e.MarginBounds.Top);
+            myFont = new Font("courier New", 12, FontStyle.Underline);
+            int y = Convert.ToInt32(e.MarginBounds.Top + 50);
+            e.Graphics.DrawString("title", myFont, Brushes.Black, e.MarginBounds.Left, y);
+            e.Graphics.DrawString("Author", myFont, Brushes.Black, e.MarginBounds.Left + 
+                Convert.ToInt32(0.6 * (e.MarginBounds.Width)), y);
+            y += Convert.ToInt32(2 * myFont.GetHeight());
+            myFont = new Font("Courier New", 12, FontStyle.Regular);
+            int iEnd = titlesPerPage * pageNumber;
+            if (iEnd > titlesTable.Rows.Count)
+            {
+                iEnd = titlesTable.Rows.Count;
+                e.HasMorePages = false;
+            }
+            else
+            {
+                e.HasMorePages = true;
+            }
+            for (int i = 1 + titlesPerPage * (pageNumber - 1); i <= iEnd; i++)
+            {
+                // programmatically move through all the records
+                if (txtTitle.Text.Length < 35)
+                {
+                    e.Graphics.DrawString(txtTitle.Text, myFont, Brushes.Black, e.MarginBounds.Left, y);
+                }
+                else
+                {
+                    e.Graphics.DrawString(txtTitle.Text.Substring(0, 35), myFont, 
+                        Brushes.Black, e.MarginBounds.Left, y);
+                }
+                if (cboAuthor1.Text.Length < 20)
+                {
+                    e.Graphics.DrawString(cboAuthor1.Text, myFont, Brushes.Black, 
+                        e.MarginBounds.Left + Convert.ToInt32(0.6 * (e.MarginBounds.Width)), y);
+                }
+                else
+                {
+                    e.Graphics.DrawString(cboAuthor1.Text.Substring(0, 20), myFont, Brushes.Black,
+                        e.MarginBounds.Left + Convert.ToInt32(0.6 * (e.MarginBounds.Width)), y);
+                }
+                btnNext.PerformClick();
+                y += Convert.ToInt32(myFont.GetHeight());
+            }
+            if (e.HasMorePages)
+                pageNumber++;
+            else
+                pageNumber = 1;
         }
     }
 }
