@@ -37,8 +37,10 @@ namespace ex5_9
                 string path = Path.GetFullPath("SQLBooksDB.mdf");
                 // connect to books database
                 booksConnection = new
-                    SqlConnection("Data Source=.\\SQLEXPRESS; AttachDBFilename=" + path + ";" +
-                    "Integrated Security=True; Connect Timeout=30; User Instance=True");
+                    SqlConnection("Data Source=.\\SQLEXPRESS; AttachDBFilename=" + Application.StartupPath + "\\SQLBooksDB.mdf;" +
+                "Integrated Security=True; Connect Timeout=30; User Instance=True");
+                //SqlConnection("Data Source=.\\SQLEXPRESS; AttachDBFilename=" + path + ";" +
+                //"Integrated Security=True; Connect Timeout=30; User Instance=True");
                 booksConnection.Open();
                 // establish command object
                 publishersCommand = new SqlCommand("Select * From Publishers ORDER BY Name", booksConnection);

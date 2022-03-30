@@ -16,7 +16,7 @@ namespace ex5_9
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmTitles());
+            Application.Run(new frmPublishers());
         }
     }
 }
